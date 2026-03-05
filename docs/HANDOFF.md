@@ -1,49 +1,109 @@
-# Handoff — Zamba Skills Implementation
+# Handoff — Zamba Skills
 
 **Datum:** 2026-03-05
-**Stav:** KOMPLETNI — vsech 19 tasku hotovych
-**Branch:** master
-**Posledni commit:** `8ad357a` style: configure dark theme and global styles
+**Stav:** MVP KOMPLETNI — vsech 19 implementacnich tasku hotovych, nepushnuto
+**Branch:** master (22 commitu ahead of origin)
+**Repo:** `C:\work\Zamba skills\Zamba-skills`
 
 ---
 
-## Co je hotove
+## Pro dalsiho agenta — rychly start
 
-### Part A: Foundation & Skills (Tasks 1-10) — KOMPLETNI
+```bash
+# 1. Overit stav
+cd "C:\work\Zamba skills\Zamba-skills"
+git log --oneline -5
+cd frontend && npm run build   # musi projit bez chyb
 
-| Task | Popis | Commit |
-|------|-------|--------|
-| 1 | Directory scaffold (skills/, pipeline/, scripts/, frontend/, CLAUDE.md, .gitignore) | `0ce5d8a` |
-| 2 | pipeline.json (6 fazi) + skills-catalog.json (17 skillu s CZ metadata) | `3ce82da` |
-| 3 | skills/start-session/SKILL.md | `8933dfc` |
-| 4 | skills/scope-check/SKILL.md | `8002a5d` |
-| 5 | skills/progress-check/SKILL.md | `9ceeea8` |
-| 6 | Adopt 4 community skills (create-docs, update-changelog, test-coverage, pr-checklist) | `7e4a204` |
-| 7 | skills/generate-tests/SKILL.md (extended from wshobson/test-harness) | `2b96b0d` |
-| 8 | skills/create-pr/SKILL.md (extended from wshobson/pr-enhance) | `cfd2d94` |
-| 9 | skills/setup-ci-tests/SKILL.md (extended from akin-ozer/cc-devops-skills) | `83b091e` |
-| 10 | scripts/install.sh + scripts/install.ps1 (symlink installers) | `ba54435` |
+# 2. Spustit dashboard
+npm run dev                     # http://localhost:3000
 
-### Part B: Frontend (Tasks 11-19) — KOMPLETNI
+# 3. Dulezite soubory
+cat CLAUDE.md                   # project instructions
+cat docs/HANDOFF.md             # tento soubor
+```
 
-| Task | Popis | Commit |
-|------|-------|--------|
-| 11 | Initialize Next.js 16 project + deps (@xyflow/react, @monaco-editor/react) | `a5fe233` |
-| 12 | Layout, Navigation, shared types (lib/types.ts) | `d8e969d` |
-| 13 | API routes (/api/pipeline, /api/skills, /api/skills/[id], /api/skills/[id]/content) | `181d23a` |
-| 14 | Pipeline view with React Flow (6 phase nodes, edges, legend, detail panel) | `2fddb40` |
-| 15 | Skill Catalog (cards, search, filters, detail modal) | `2c63c15` |
-| 16 | Skill Editor with Monaco (load/save SKILL.md, template) | `1877448` |
-| 17 | Settings page (symlink status, system info, useful commands) | `fa309e9` |
-| 18 | Dark theme globals.css (zinc palette, custom scrollbar) | `8ad357a` |
-| 19 | End-to-end smoke test (all files verified, build passes, dev server starts) | — |
+### Co je v repu
 
-### Shrnuti
+| Slozka | Obsah |
+|--------|-------|
+| `skills/` | 10 SKILL.md souboru (3 written, 4 adopted, 3 extended) |
+| `pipeline/` | pipeline.json (6 fazi), skills-catalog.json (17 skillu, CZ metadata) |
+| `frontend/` | Next.js 16 dashboard — 3 stranky, 5 API routes, 5 komponent |
+| `scripts/` | install.sh + install.ps1 (symlink skills do ~/.claude/skills/) |
+| `docs/plans/` | Design doc + implementation plan (19 tasku) |
 
-- **10 skills** v `skills/` — 3 written, 4 adopted, 3 extended
-- **Pipeline definice** v `pipeline/` — pipeline.json (6 fazi) + skills-catalog.json (17 skillu s CZ popisky)
-- **Install skripty** v `scripts/` — install.sh (Linux/Mac) + install.ps1 (Windows)
-- **Frontend dashboard** v `frontend/` — 3 stranky (Pipeline, Katalog, Nastaveni) + 5 API routes + 5 komponent
+### Frontend stranky
+
+| Route | Popis |
+|-------|-------|
+| `/pipeline` | React Flow vizualizace 6 fazi pipeline, kliknutelne nody s detailem |
+| `/catalog` | Katalog 17 skillu — karty, search, filtry (faze/zdroj), detail modal, Monaco editor |
+| `/settings` | Stav symlinku, systemove info, uzitecne prikazy |
+
+### API routes
+
+| Endpoint | Metoda | Popis |
+|----------|--------|-------|
+| `/api/pipeline` | GET | pipeline.json + skills-catalog.json |
+| `/api/skills` | GET | vsechny skills s file existence check |
+| `/api/skills/[id]` | GET | metadata jednoho skillu z katalogu |
+| `/api/skills/[id]/content` | GET | SKILL.md obsah + parsed frontmatter |
+| `/api/skills/[id]/content` | PUT | ulozit SKILL.md (`{ content: string }`) |
+| `/api/settings` | GET | symlink status + system info |
+
+---
+
+## Tech stack — POZOR: lisi se od planu
+
+Implementacni plan (`docs/plans/2026-03-04-zamba-skills-implementation.md`) pocita s Next.js 14 a Tailwind 3. **Skutecnost:**
+
+| Plan rikal | Skutecnost |
+|------------|-----------|
+| Next.js 14 | **Next.js 16.1.6** (Turbopack) |
+| React 18 | **React 19.2.3** |
+| Tailwind CSS 3 (`@tailwind base`) | **Tailwind CSS 4** (`@import "tailwindcss"`) |
+| tailwind.config.ts | **Neexistuje** — v4 auto-detekce |
+| Inter font z next/font/google | Pouzit Inter z next/font/google |
+
+### Klicove odlisnosti pro budouci praci
+
+1. **Tailwind v4** — zadny `tailwind.config.ts`, zadne `@tailwind` direktivy. Konfigurace pres `@theme inline {}` v globals.css
+2. **Next.js 16** — route params jsou `Promise<{ id: string }>` (musi `await params`), `NodeProps` z @xyflow/react nema generika
+3. **Cesty v planu** — plan ma `C:\cursor\Zamba skills`, spravna cesta je `C:\work\Zamba skills\Zamba-skills`
+
+---
+
+## Commit historie (vsech 19 tasku)
+
+### Part A: Foundation & Skills (Tasks 1-10)
+
+| Task | Commit | Popis |
+|------|--------|-------|
+| 1 | `0ce5d8a` | Directory scaffold |
+| 2 | `3ce82da` | pipeline.json + skills-catalog.json |
+| 3 | `8933dfc` | start-session skill |
+| 4 | `8002a5d` | scope-check skill |
+| 5 | `9ceeea8` | progress-check skill |
+| 6 | `7e4a204` | 4 adopted community skills |
+| 7 | `2b96b0d` | generate-tests (extended) |
+| 8 | `cfd2d94` | create-pr (extended) |
+| 9 | `83b091e` | setup-ci-tests (extended) |
+| 10 | `ba54435` | install scripts |
+
+### Part B: Frontend (Tasks 11-19)
+
+| Task | Commit | Popis |
+|------|--------|-------|
+| 11 | `a5fe233` | Next.js init + deps |
+| 12 | `d8e969d` | Layout, Navigation, types |
+| 13 | `181d23a` | API routes (pipeline, skills CRUD) |
+| 14 | `2fddb40` | Pipeline view (React Flow) |
+| 15 | `2c63c15` | Skill Catalog (cards, search, filters, detail) |
+| 16 | `1877448` | Skill Editor (Monaco) |
+| 17 | `fa309e9` | Settings page |
+| 18 | `8ad357a` | Dark theme globals.css |
+| 19 | — | Smoke test (verified, no code changes) |
 
 ---
 
@@ -51,70 +111,78 @@
 
 ```
 zamba-skills/
-├── .gitignore
 ├── CLAUDE.md
+├── .gitignore
 ├── docs/
-│   ├── HANDOFF.md
+│   ├── HANDOFF.md                    ← tento soubor
 │   └── plans/
 │       ├── 2026-03-03-zamba-skills-design.md
 │       └── 2026-03-04-zamba-skills-implementation.md
-├── frontend/
+├── frontend/                          ← Next.js 16 app
+│   ├── package.json                   ← next 16.1.6, react 19, tailwind 4
 │   ├── app/
-│   │   ├── layout.tsx          ← dark theme, Navigation
-│   │   ├── page.tsx            ← redirect to /pipeline
-│   │   ├── globals.css         ← zinc dark theme + scrollbar
-│   │   ├── pipeline/page.tsx   ← React Flow visualization
-│   │   ├── catalog/page.tsx    ← skill cards + search + filters
-│   │   ├── settings/page.tsx   ← symlink status + system info
+│   │   ├── layout.tsx                 ← Inter font, dark body, Navigation
+│   │   ├── page.tsx                   ← redirect → /pipeline
+│   │   ├── globals.css                ← zinc dark theme, custom scrollbar
+│   │   ├── pipeline/page.tsx          ← React Flow + phase detail panel
+│   │   ├── catalog/page.tsx           ← skill grid + search + filters + modals
+│   │   ├── settings/page.tsx          ← symlink status + system info
 │   │   └── api/
-│   │       ├── pipeline/route.ts
-│   │       ├── settings/route.ts
+│   │       ├── pipeline/route.ts      ← GET pipeline+catalog
+│   │       ├── settings/route.ts      ← GET symlink status
 │   │       └── skills/
-│   │           ├── route.ts
+│   │           ├── route.ts           ← GET all skills
 │   │           └── [id]/
-│   │               ├── route.ts
-│   │               └── content/route.ts
+│   │               ├── route.ts       ← GET skill metadata
+│   │               └── content/route.ts ← GET/PUT SKILL.md
 │   ├── components/
-│   │   ├── Navigation.tsx
-│   │   ├── PipelineFlow.tsx
-│   │   ├── SkillCard.tsx
-│   │   ├── SkillDetail.tsx
-│   │   └── SkillEditor.tsx
+│   │   ├── Navigation.tsx             ← top nav, 3 tabs (CZ labels)
+│   │   ├── PipelineFlow.tsx           ← React Flow wrapper, PhaseNode
+│   │   ├── SkillCard.tsx              ← catalog card
+│   │   ├── SkillDetail.tsx            ← full detail modal
+│   │   └── SkillEditor.tsx            ← Monaco fullscreen editor
 │   └── lib/
-│       ├── types.ts
-│       └── paths.ts
+│       ├── types.ts                   ← Pipeline, SkillCatalog, etc.
+│       └── paths.ts                   ← REPO_ROOT, SKILLS_DIR, etc.
 ├── pipeline/
-│   ├── pipeline.json
-│   └── skills-catalog.json
+│   ├── pipeline.json                  ← 6 fazi s skill mappings
+│   └── skills-catalog.json            ← 17 skillu s CZ popisky
 ├── scripts/
-│   ├── install.sh
-│   └── install.ps1
-└── skills/
-    ├── start-session/SKILL.md
-    ├── scope-check/SKILL.md
-    ├── progress-check/SKILL.md
-    ├── create-docs/SKILL.md
-    ├── update-changelog/SKILL.md
-    ├── test-coverage/SKILL.md
-    ├── pr-checklist/SKILL.md
-    ├── generate-tests/SKILL.md
-    ├── create-pr/SKILL.md
-    └── setup-ci-tests/SKILL.md
+│   ├── install.sh                     ← Linux/Mac symlink installer
+│   └── install.ps1                    ← Windows symlink installer
+└── skills/                            ← 10 SKILL.md souboru
+    ├── start-session/SKILL.md         ← written
+    ├── scope-check/SKILL.md           ← written
+    ├── progress-check/SKILL.md        ← written
+    ├── create-docs/SKILL.md           ← adopted
+    ├── update-changelog/SKILL.md      ← adopted
+    ├── test-coverage/SKILL.md         ← adopted
+    ├── pr-checklist/SKILL.md          ← adopted
+    ├── generate-tests/SKILL.md        ← extended
+    ├── create-pr/SKILL.md             ← extended
+    └── setup-ci-tests/SKILL.md        ← extended
 ```
 
-### Tech stack
+---
 
-- Next.js 16 (App Router, Turbopack)
-- React Flow (@xyflow/react)
-- Monaco Editor (@monaco-editor/react)
-- Tailwind CSS 4
-- TypeScript
-- Dark theme (zinc palette)
-- Czech UI
+## Zname problemy a mozna vylepseni
 
-### Spusteni
+### Nepushnuto
+Branch je 22 commitu ahead of origin. Je potreba `git push`.
 
-```bash
-cd frontend && npm run dev
-# http://localhost:3000
-```
+### Mozna vylepseni (neimplementovano)
+1. **Testy** — zadne unit/integration testy pro frontend
+2. **i18n** — CZ texty jsou hardcoded v komponentach, ne centralizovane
+3. **Error boundaries** — chybi React error boundaries
+4. **Loading states** — jednoduche textove "Nacitani...", bez skeleton UI
+5. **Responsive** — zakladni grid layout, netestovano na mobilu
+6. **Accessibility** — zakladni semanticke HTML, ale bez ARIA labelu na modalech
+7. **paths.ts** — `REPO_ROOT = path.resolve(process.cwd(), "..")` funguje jen kdyz se `npm run dev` spousti z `frontend/`
+8. **Security** — PUT endpoint na `/api/skills/[id]/content` nema autentizaci (OK pro lokalni dev, ne pro produkci)
+9. **SOURCE_COLORS/LABELS** — duplicitni definice ve 4 souborech (PipelineFlow, pipeline/page, SkillCard, SkillDetail)
+
+### Architekturni rozhodnuti
+- **Filesystem-based API** — skills se ctou/zapisuji primo z disku pres Node fs, zadna databaze
+- **skills-catalog.json jako zdroj pravdy** — CZ metadata, faze, tagy jsou v JSON, ne v SKILL.md frontmatter
+- **Client-side rendering** — vsechny stranky jsou "use client", data se fetchuji pres API routes
+- **Zadny state management** — kazda stranka ma vlastni useState, zadny global store
