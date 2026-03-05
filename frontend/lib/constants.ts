@@ -16,16 +16,16 @@ export const SOURCE_BADGE_STYLES: Record<string, string> = {
 
 // Short labels
 export const SOURCE_LABELS: Record<string, string> = {
-  write: "Vlastni",
-  adopt: "Adoptovany",
-  extend: "Rozsireny",
+  write: "Vlastní",
+  adopt: "Adoptovaný",
+  extend: "Rozšířený",
   superpowers: "Superpowers",
 };
 
 // Long labels for detail view
 export const SOURCE_LABELS_LONG: Record<string, string> = {
-  write: "Vlastni (napsany od nuly)",
-  adopt: "Adoptovany z komunity",
-  extend: "Rozsireny (komunita + vlastni logika)",
+  write: "Vlastní (napsaný od nuly)",
+  adopt: "Adoptovaný z komunity",
+  extend: "Rozšířený (komunita + vlastní logika)",
   superpowers: "Superpowers (obra/superpowers)",
 };
