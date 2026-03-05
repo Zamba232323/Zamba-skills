@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import PipelineFlow from "@/components/PipelineFlow";
+import SkillDetail from "@/components/SkillDetail";
+import SkillEditor from "@/components/SkillEditor";
 import type { Pipeline, SkillCatalog, SkillCatalogEntry, PipelinePhase } from "@/lib/types";
 import { SOURCE_BADGE_STYLES, SOURCE_LABELS } from "@/lib/constants";
 
@@ -9,6 +11,8 @@ export default function PipelinePage() {
   const [pipeline, setPipeline] = useState<Pipeline | null>(null);
   const [catalog, setCatalog] = useState<SkillCatalog | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
+  const [selectedSkill, setSelectedSkill] = useState<SkillCatalogEntry | null>(null);
+  const [editingSkill, setEditingSkill] = useState<SkillCatalogEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -66,7 +70,8 @@ export default function PipelinePage() {
             {phaseSkills.map((skill) => (
               <div
                 key={skill.id}
-                className="rounded-lg border border-zinc-700 bg-zinc-800 p-4"
+                onClick={() => setSelectedSkill(skill)}
+                className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-800 p-4 transition-colors hover:border-zinc-500"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <code className="text-sm font-mono text-white">{skill.command}</code>
@@ -94,6 +99,26 @@ export default function PipelinePage() {
             ))}
           </div>
         </div>
+      )}
+      {/* Skill detail modal */}
+      {selectedSkill && !editingSkill && (
+        <SkillDetail
+          skill={selectedSkill}
+          onClose={() => setSelectedSkill(null)}
+          onEdit={() => {
+            setEditingSkill(selectedSkill);
+            setSelectedSkill(null);
+          }}
+        />
+      )}
+
+      {/* Skill editor modal */}
+      {editingSkill && (
+        <SkillEditor
+          skillId={editingSkill.id}
+          skillName={editingSkill.name.cs}
+          onClose={() => setEditingSkill(null)}
+        />
       )}
     </div>
   );
