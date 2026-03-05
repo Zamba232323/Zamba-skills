@@ -1,20 +1,7 @@
 "use client";
 
 import type { SkillCatalogEntry } from "@/lib/types";
-
-const SOURCE_COLORS: Record<string, string> = {
-  write: "bg-green-500/20 text-green-400 border-green-500/30",
-  adopt: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  extend: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  superpowers: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-};
-
-const SOURCE_LABELS: Record<string, string> = {
-  write: "Vlastni",
-  adopt: "Adoptovany",
-  extend: "Rozsireny",
-  superpowers: "Superpowers",
-};
+import { SOURCE_BADGE_STYLES, SOURCE_LABELS } from "@/lib/constants";
 
 interface SkillCardProps {
   skill: SkillCatalogEntry;
@@ -29,7 +16,7 @@ export default function SkillCard({ skill, onClick }: SkillCardProps) {
     >
       <div className="flex items-start justify-between mb-3">
         <code className="text-sm font-mono text-white">{skill.command}</code>
-        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${SOURCE_COLORS[skill.source]}`}>
+        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${SOURCE_BADGE_STYLES[skill.source]}`}>
           {SOURCE_LABELS[skill.source]}
         </span>
       </div>
@@ -38,7 +25,7 @@ export default function SkillCard({ skill, onClick }: SkillCardProps) {
       <p className="text-sm text-zinc-400 mb-3">{skill.description.cs}</p>
 
       <div className="text-xs text-zinc-500 mb-3">
-        <span className="font-medium text-zinc-400">Kdy pouzit: </span>
+        <span className="font-medium text-zinc-400">Kdy použít:</span>
         {skill.whenToUse.cs}
       </div>
 

@@ -24,26 +24,32 @@ const STATUS_STYLES: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   linked: "Propojeno",
-  missing: "Chybi symlink",
-  conflict: "Konflikt — jiny cil",
+  missing: "Chybí symlink",
+  conflict: "Konflikt — jiný cíl",
 };
 
 export default function SettingsPage() {
   const [symlinks, setSymlinks] = useState<SymlinkStatus[]>([]);
   const [info, setInfo] = useState<SystemInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/settings")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Server error");
+        return r.json();
+      })
       .then((data) => {
         setSymlinks(data.symlinks);
         setInfo(data.info);
       })
+      .catch(() => setError("Nepodařilo se načíst nastavení"))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="text-zinc-400 p-8">Nacitani...</div>;
+  if (error) return <div className="text-red-400 p-8">{error}</div>;
+  if (loading) return <div className="text-zinc-400 p-8">Načítání...</div>;
 
   const linked = symlinks.filter((s) => s.status === "linked").length;
   const missing = symlinks.filter((s) => s.status === "missing").length;
@@ -51,7 +57,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-bold">Nastaveni</h1>
+        <h1 className="text-2xl font-bold">Nastavení</h1>
         <p className="text-zinc-400 text-sm mt-1">
           Stav instalace, symlinky, systemove informace.
         </p>
@@ -81,7 +87,7 @@ export default function SettingsPage() {
       {/* Symlink status */}
       <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Stav symlinku</h2>
+          <h2 className="text-lg font-semibold">Stav symlinků</h2>
           <div className="text-xs text-zinc-500">
             {linked}/{symlinks.length} propojeno
             {missing > 0 && (
@@ -92,7 +98,7 @@ export default function SettingsPage() {
 
         {missing > 0 && (
           <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-300">
-            Nektere symlinky chybi. Spust instalacni skript:
+            Některé symlinky chybí. Spust instalacni skript:
             <code className="block mt-1 text-xs font-mono text-amber-400">
               {info?.platform === "win32"
                 ? "powershell -ExecutionPolicy Bypass ./scripts/install.ps1"
@@ -118,7 +124,7 @@ export default function SettingsPage() {
 
       {/* Quick actions */}
       <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-        <h2 className="text-lg font-semibold mb-4">Uzitecne prikazy</h2>
+        <h2 className="text-lg font-semibold mb-4">Užitečné příkazy</h2>
         <div className="space-y-3 text-sm">
           <div>
             <div className="text-zinc-400 mb-1">Nainstalovat/aktualizovat symlinky:</div>

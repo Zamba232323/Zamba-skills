@@ -7,8 +7,8 @@ import SkillEditor from "@/components/SkillEditor";
 import type { SkillCatalogEntry } from "@/lib/types";
 
 const PHASE_LABELS: Record<string, string> = {
-  "session-start": "Zacatek relace",
-  plan: "Planovani",
+  "session-start": "Začátek relace",
+  plan: "Plánování",
   build: "Build",
   quality: "Kvalita",
   integration: "Integrace",
@@ -16,10 +16,10 @@ const PHASE_LABELS: Record<string, string> = {
 };
 
 const SOURCE_OPTIONS = [
-  { value: "all", label: "Vsechny zdroje" },
-  { value: "write", label: "Vlastni" },
-  { value: "adopt", label: "Adoptovane" },
-  { value: "extend", label: "Rozsirene" },
+  { value: "all", label: "Všechny zdroje" },
+  { value: "write", label: "Vlastní" },
+  { value: "adopt", label: "Adoptované" },
+  { value: "extend", label: "Rozšířené" },
   { value: "superpowers", label: "Superpowers" },
 ];
 
@@ -31,12 +31,17 @@ export default function CatalogPage() {
   const [selectedSkill, setSelectedSkill] = useState<SkillCatalogEntry | null>(null);
   const [editingSkill, setEditingSkill] = useState<SkillCatalogEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/skills")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Server error");
+        return r.json();
+      })
       .then((data) => setSkills(data.skills))
-      .catch(() => setError("Nepodarilo se nacist skills"));
+      .catch(() => setError("Nepodařilo se načíst skills"))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = useMemo(() => {
@@ -54,13 +59,14 @@ export default function CatalogPage() {
   }, [skills, search, phaseFilter, sourceFilter]);
 
   if (error) return <div className="text-red-400 p-8">{error}</div>;
+  if (loading) return <div className="text-zinc-400 p-8">Načítání...</div>;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Katalog skillu</h1>
+        <h1 className="text-2xl font-bold">Katalog skillů</h1>
         <p className="text-zinc-400 text-sm mt-1">
-          {skills.length} skillu v pipeline — klikni pro detaily a upravu.
+          {skills.length} skillů v pipeline — klikni pro detaily a upravu.
         </p>
       </div>
 
@@ -78,7 +84,7 @@ export default function CatalogPage() {
           onChange={(e) => setPhaseFilter(e.target.value)}
           className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-zinc-500 focus:outline-none"
         >
-          <option value="all">Vsechny faze</option>
+          <option value="all">Všechny fáze</option>
           {Object.entries(PHASE_LABELS).map(([key, label]) => (
             <option key={key} value={key}>
               {label}
@@ -101,9 +107,9 @@ export default function CatalogPage() {
       {/* Stats */}
       <div className="flex gap-4 text-xs text-zinc-500">
         <span>Zobrazeno: {filtered.length}/{skills.length}</span>
-        <span>Vlastni: {skills.filter((s) => s.source === "write").length}</span>
-        <span>Adoptovane: {skills.filter((s) => s.source === "adopt").length}</span>
-        <span>Rozsirene: {skills.filter((s) => s.source === "extend").length}</span>
+        <span>Vlastní: {skills.filter((s) => s.source === "write").length}</span>
+        <span>Adoptované: {skills.filter((s) => s.source === "adopt").length}</span>
+        <span>Rozšířené: {skills.filter((s) => s.source === "extend").length}</span>
         <span>Superpowers: {skills.filter((s) => s.source === "superpowers").length}</span>
       </div>
 
@@ -120,7 +126,7 @@ export default function CatalogPage() {
 
       {filtered.length === 0 && (
         <div className="text-center text-zinc-500 py-12">
-          Zadne shody pro zadane filtry.
+          Žádné shody pro zadané filtry.
         </div>
       )}
 

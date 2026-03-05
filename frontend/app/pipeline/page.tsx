@@ -3,20 +3,7 @@
 import { useEffect, useState } from "react";
 import PipelineFlow from "@/components/PipelineFlow";
 import type { Pipeline, SkillCatalog, SkillCatalogEntry, PipelinePhase } from "@/lib/types";
-
-const SOURCE_COLORS: Record<string, string> = {
-  write: "bg-green-500/20 text-green-400 border-green-500/30",
-  adopt: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  extend: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  superpowers: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-};
-
-const SOURCE_LABELS: Record<string, string> = {
-  write: "Vlastni",
-  adopt: "Adoptovany",
-  extend: "Rozsireny",
-  superpowers: "Superpowers",
-};
+import { SOURCE_BADGE_STYLES, SOURCE_LABELS } from "@/lib/constants";
 
 export default function PipelinePage() {
   const [pipeline, setPipeline] = useState<Pipeline | null>(null);
@@ -26,16 +13,19 @@ export default function PipelinePage() {
 
   useEffect(() => {
     fetch("/api/pipeline")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Server error");
+        return r.json();
+      })
       .then((data) => {
         setPipeline(data.pipeline);
         setCatalog(data.catalog);
       })
-      .catch(() => setError("Nepodarilo se nacist pipeline data"));
+      .catch(() => setError("Nepodařilo se načíst pipeline data"));
   }, []);
 
   if (error) return <div className="text-red-400 p-8">{error}</div>;
-  if (!pipeline || !catalog) return <div className="text-zinc-400 p-8">Nacitani...</div>;
+  if (!pipeline || !catalog) return <div className="text-zinc-400 p-8">Načítání...</div>;
 
   const selectedPhaseData = pipeline.phases.find((p) => p.id === selectedPhase);
   const phaseSkills = selectedPhaseData
@@ -47,14 +37,14 @@ export default function PipelinePage() {
       <div>
         <h1 className="text-2xl font-bold">Pipeline</h1>
         <p className="text-zinc-400 text-sm mt-1">
-          Vizualizace workflow — od zacatku relace po merge. Klikni na fazi pro detaily.
+          Vizualizace workflow — od začátku relace po merge. Klikni na fazi pro detaily.
         </p>
       </div>
 
       {/* Legend */}
       <div className="flex gap-4 text-xs">
         {Object.entries(SOURCE_LABELS).map(([key, label]) => (
-          <span key={key} className={`rounded-full border px-2 py-1 ${SOURCE_COLORS[key]}`}>
+          <span key={key} className={`rounded-full border px-2 py-1 ${SOURCE_BADGE_STYLES[key]}`}>
             {label}
           </span>
         ))}
@@ -80,7 +70,7 @@ export default function PipelinePage() {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <code className="text-sm font-mono text-white">{skill.command}</code>
-                  <span className={`rounded-full border px-2 py-0.5 text-[10px] ${SOURCE_COLORS[skill.source]}`}>
+                  <span className={`rounded-full border px-2 py-0.5 text-[10px] ${SOURCE_BADGE_STYLES[skill.source]}`}>
                     {SOURCE_LABELS[skill.source]}
                   </span>
                 </div>

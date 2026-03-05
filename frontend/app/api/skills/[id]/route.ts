@@ -8,6 +8,10 @@ export async function GET(
 ) {
   const { id } = await params;
 
+  if (id.includes("..") || id.includes("/") || id.includes("\\")) {
+    return NextResponse.json({ error: "Invalid skill ID" }, { status: 400 });
+  }
+
   try {
     const catalogRaw = await fs.readFile(CATALOG_JSON, "utf-8");
     const catalog = JSON.parse(catalogRaw);

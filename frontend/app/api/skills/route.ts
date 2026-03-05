@@ -23,6 +23,7 @@ export async function GET() {
 
     return NextResponse.json({ skills });
   } catch (error) {
+    console.error("Failed to load skills:", error);
     return NextResponse.json(
       { error: "Failed to load skills" },
       { status: 500 }

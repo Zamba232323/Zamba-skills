@@ -14,20 +14,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { PipelinePhase, SkillCatalogEntry } from "@/lib/types";
-
-const SOURCE_COLORS: Record<string, string> = {
-  write: "#22c55e",
-  adopt: "#3b82f6",
-  extend: "#f59e0b",
-  superpowers: "#a855f7",
-};
-
-const SOURCE_LABELS: Record<string, string> = {
-  write: "Vlastni",
-  adopt: "Adoptovany",
-  extend: "Rozsireny",
-  superpowers: "Superpowers",
-};
+import { SOURCE_HEX_COLORS, SOURCE_LABELS } from "@/lib/constants";
 
 function PhaseNode({ data }: NodeProps) {
   const phase = data.phase as PipelinePhase;
@@ -47,7 +34,7 @@ function PhaseNode({ data }: NodeProps) {
           <span
             key={skill.id}
             className="inline-block rounded-full px-2 py-0.5 text-[10px] font-medium text-white"
-            style={{ backgroundColor: SOURCE_COLORS[skill.source] + "cc" }}
+            style={{ backgroundColor: SOURCE_HEX_COLORS[skill.source] + "cc" }}
             title={`${skill.name.cs} (${SOURCE_LABELS[skill.source]})`}
           >
             {skill.command}
@@ -55,7 +42,7 @@ function PhaseNode({ data }: NodeProps) {
         ))}
       </div>
       {phase.loop && (
-        <div className="mt-2 text-[10px] text-amber-400">Iterativni smycka</div>
+        <div className="mt-2 text-[10px] text-amber-400">Iterativní smyčka</div>
       )}
       <Handle type="source" position={Position.Bottom} className="!bg-zinc-500" />
     </div>

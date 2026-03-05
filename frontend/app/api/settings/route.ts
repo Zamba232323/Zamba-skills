@@ -44,6 +44,7 @@ export async function GET() {
 
     return NextResponse.json({ symlinks, info });
   } catch (error) {
+    console.error("Failed to load settings:", error);
     return NextResponse.json({ error: "Failed to load settings" }, { status: 500 });
   }
 }

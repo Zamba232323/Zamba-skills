@@ -27,7 +27,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
         echo "  + $skill_name"
     fi
 
-    ln -s "$skill_dir" "$target"
+    ln -s "${skill_dir%/}" "$target"
 done
 
 echo ""

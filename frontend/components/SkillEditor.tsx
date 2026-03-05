@@ -81,22 +81,25 @@ export default function SkillEditor({ skillId, skillName, onClose }: SkillEditor
       <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
         <div className="flex items-center gap-3">
           <button
-            onClick={onClose}
+            onClick={() => {
+              if (hasChanges && !confirm("Máte neuložené změny. Opravdu zavřít?")) return;
+              onClose();
+            }}
             className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white"
           >
-            Zpet
+            Zpět
           </button>
           <span className="text-sm font-medium text-white">
             {skillName} — <code className="text-zinc-400">skills/{skillId}/SKILL.md</code>
           </span>
           {hasChanges && (
             <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-400">
-              Neulozene zmeny
+              Neuložené změny
             </span>
           )}
           {saved && (
             <span className="rounded bg-green-500/20 px-2 py-0.5 text-[10px] text-green-400">
-              Ulozeno
+              Uloženo
             </span>
           )}
         </div>
@@ -105,7 +108,7 @@ export default function SkillEditor({ skillId, skillName, onClose }: SkillEditor
           disabled={!hasChanges || saving}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {saving ? "Ukladam..." : "Ulozit"}
+          {saving ? "Ukládám..." : "Uložit"}
         </button>
       </div>
 
@@ -113,7 +116,7 @@ export default function SkillEditor({ skillId, skillName, onClose }: SkillEditor
       <div className="flex-1">
         {loading ? (
           <div className="flex items-center justify-center h-full text-zinc-500">
-            Nacitani editoru...
+            Načítání editoru...
           </div>
         ) : (
           <Editor

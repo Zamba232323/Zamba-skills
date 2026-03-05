@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { href: "/pipeline", label: "Pipeline", labelCs: "Pipeline" },
-  { href: "/catalog", label: "Katalog skillů", labelCs: "Katalog skillů" },
-  { href: "/settings", label: "Nastavení", labelCs: "Nastavení" },
+  { href: "/pipeline", label: "Pipeline" },
+  { href: "/catalog", label: "Katalog skillů" },
+  { href: "/settings", label: "Nastavení" },
 ];
 
 export default function Navigation() {
@@ -30,7 +30,7 @@ export default function Navigation() {
                       : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
                   }`}
                 >
-                  {tab.labelCs}
+                  {tab.label}
                 </Link>
               );
             })}

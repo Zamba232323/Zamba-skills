@@ -13,6 +13,7 @@ export async function GET() {
       catalog: JSON.parse(catalogRaw),
     });
   } catch (error) {
+    console.error("Failed to load pipeline data:", error);
     return NextResponse.json(
       { error: "Failed to load pipeline data" },
       { status: 500 }

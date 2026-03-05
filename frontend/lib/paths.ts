@@ -1,7 +1,7 @@
 import path from "path";
 
-// Monorepo root is one level above frontend/
-export const REPO_ROOT = path.resolve(process.cwd(), "..");
+// Use __dirname to resolve repo root regardless of cwd
+export const REPO_ROOT = path.resolve(__dirname, "../..");
 export const SKILLS_DIR = path.join(REPO_ROOT, "skills");
 export const PIPELINE_DIR = path.join(REPO_ROOT, "pipeline");
 export const PIPELINE_JSON = path.join(PIPELINE_DIR, "pipeline.json");
