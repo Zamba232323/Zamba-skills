@@ -1,0 +1,70 @@
+{
+  "phases": [
+    {
+      "id": "session-start",
+      "name": "Session Start",
+      "description": "Load plan, assess state, select achievable tasks",
+      "skills": ["start-session"],
+      "skillSources": { "start-session": "write" },
+      "next": "plan"
+    },
+    {
+      "id": "plan",
+      "name": "Plan",
+      "description": "Design → Implementation plan → Approval",
+      "skills": ["brainstorm", "write-plan", "scope-check"],
+      "skillSources": {
+        "brainstorm": "superpowers",
+        "write-plan": "superpowers",
+        "scope-check": "write"
+      },
+      "next": "build"
+    },
+    {
+      "id": "build",
+      "name": "Build",
+      "description": "Iterative: test → implement → verify",
+      "skills": ["execute-plan", "generate-tests", "progress-check"],
+      "skillSources": {
+        "execute-plan": "superpowers",
+        "generate-tests": "extend:wshobson/test-harness",
+        "progress-check": "write"
+      },
+      "loop": true,
+      "next": "quality"
+    },
+    {
+      "id": "quality",
+      "name": "Quality",
+      "description": "Review, documentation, changelog, coverage",
+      "skills": ["requesting-code-review", "create-docs", "update-changelog", "test-coverage"],
+      "skillSources": {
+        "requesting-code-review": "superpowers",
+        "create-docs": "adopt:levnikolaevich/ln-100-documents-pipeline",
+        "update-changelog": "adopt:ComposioHQ/changelog-generator",
+        "test-coverage": "adopt:levnikolaevich/ln-634-test-coverage-auditor"
+      },
+      "next": "integration"
+    },
+    {
+      "id": "integration",
+      "name": "Integration",
+      "description": "Branch strategy + PR + CI tests + checklist",
+      "skills": ["create-pr", "setup-ci-tests", "pr-checklist"],
+      "skillSources": {
+        "create-pr": "extend:wshobson/pr-enhance+git-workflow",
+        "setup-ci-tests": "extend:akin-ozer/cc-devops-skills",
+        "pr-checklist": "adopt:wshobson/deploy-checklist"
+      },
+      "next": "merge"
+    },
+    {
+      "id": "merge",
+      "name": "Merge & Close",
+      "description": "Merge, cleanup, update plan",
+      "skills": ["finish-branch"],
+      "skillSources": { "finish-branch": "superpowers" },
+      "next": null
+    }
+  ]
+}
